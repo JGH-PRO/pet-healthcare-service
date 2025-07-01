@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  petcare-app-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: petcare_app_backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://petcare-db:3306/petcare_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=petcare_user
+      - SPRING_DATASOURCE_PASSWORD=petcare_password
+      # Example of overriding JWT secret and expiration for Docker environment if needed
+      # - APP_JWT_SECRET=YourVeryLongAndSecureSecretForDockerEnvironmentKeepItSafe
+      # - APP_JWT_EXPIRATION_MS=86400000
+    depends_on:
+      petcare-db:
+        condition: service_healthy
+    networks:
+      - petcare-network
+
+  petcare-db:
+    image: mariadb:10.11
+    container_name: petcare_app_db
+    ports:
+      - "3307:3306" # Host port 3307 maps to container port 3306
+    environment:
+      - MARIADB_ROOT_PASSWORD=very_strong_root_password
+      - MARIADB_DATABASE=petcare_db
+      - MARIADB_USER=petcare_user
+      - MARIADB_PASSWORD=petcare_password
+    volumes:
+      - petcare_db_data:/var/lib/mysql
+    networks:
+      - petcare-network
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "petcare_user", "-ppetcare_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  petcare_db_data:
+
+networks:
+  petcare-network:
+    driver: bridge
