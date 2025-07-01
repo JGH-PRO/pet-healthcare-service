@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import com.petcare.petcareapp.domain.WalkLog; // Added for WalkLog relationship
 import java.util.Objects;
 
 @Entity
@@ -42,6 +43,9 @@ public class Pet {
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Appointment> appointments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<WalkLog> walkLogs = new ArrayList<>();
 
     // Constructors
     public Pet() {
@@ -87,6 +91,12 @@ public class Pet {
     public void setAppointments(List<Appointment> appointments) { this.appointments = appointments; }
     public void addAppointment(Appointment appointment) { this.appointments.add(appointment); appointment.setPet(this); }
     public void removeAppointment(Appointment appointment) { this.appointments.remove(appointment); appointment.setPet(null); }
+
+    // WalkLog methods
+    public List<WalkLog> getWalkLogs() { return walkLogs; }
+    public void setWalkLogs(List<WalkLog> walkLogs) { this.walkLogs = walkLogs; }
+    public void addWalkLog(WalkLog walkLog) { this.walkLogs.add(walkLog); walkLog.setPet(this); }
+    public void removeWalkLog(WalkLog walkLog) { this.walkLogs.remove(walkLog); walkLog.setPet(null); }
 
     @Override
     public boolean equals(Object o) {

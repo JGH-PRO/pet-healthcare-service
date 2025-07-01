@@ -1,5 +1,6 @@
 package com.petcare.petcareapp.domain;
 
+import com.petcare.petcareapp.domain.Subscription; // This import was correctly added by awk
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,6 +45,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<PostLike> likes = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Subscription> subscriptions = new ArrayList<>(); // Added missing field declaration
 
     // Constructors
     public User() {
@@ -94,6 +98,12 @@ public class User {
     public void setLikes(Set<PostLike> likes) { this.likes = likes; }
     public void addLike(PostLike like) { this.likes.add(like); like.setUser(this); }
     public void removeLike(PostLike like) { this.likes.remove(like); like.setUser(null); }
+
+    // Subscription methods
+    public List<Subscription> getSubscriptions() { return subscriptions; }
+    public void setSubscriptions(List<Subscription> subscriptions) { this.subscriptions = subscriptions; }
+    public void addSubscription(Subscription subscription) { this.subscriptions.add(subscription); subscription.setUser(this); }
+    public void removeSubscription(Subscription subscription) { this.subscriptions.remove(subscription); subscription.setUser(null); }
 
     @Override
     public boolean equals(Object o) {
